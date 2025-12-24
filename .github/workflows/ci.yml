@@ -1,5 +1,8 @@
 name: CI - Build Test Scan
 
+env:
+  IMAGE: rajgltichmax/k8s-project
+
 on:
   push:
     branches: [main]
@@ -22,21 +25,29 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Validate image name is lowercase
+        run: |
+          echo "IMAGE=${{ env.IMAGE }}"
+          if echo "${{ env.IMAGE }}" | grep -q '[A-Z]'; then
+            echo "Docker image repository must be lowercase. Fix env.IMAGE in this workflow."
+            exit 1
+          fi
+
       - name: Build Docker image
         run: |
           docker build \
-            -t rajgltichmax/K8s-project:${{ github.sha }} \
-            -t rajgltichmax/K8s-project:latest \
+            -t ${{ env.IMAGE }}:${{ github.sha }} \
+            -t ${{ env.IMAGE }}:latest \
             backend/
 
       - name: Trivy Scan
         uses: aquasecurity/trivy-action@0.24.0
         with:
-          image-ref: rajgltichmax/K8s-project:${{ github.sha }}
+          image-ref: ${{ env.IMAGE }}:${{ github.sha }}
           severity: HIGH,CRITICAL
           exit-code: "1"
 
       - name: Push image
         run: |
-          docker push rajgltichmax/K8s-project:${{ github.sha }}
-          docker push rajgltichmax/K8s-project:latest
+          docker push ${{ env.IMAGE }}:${{ github.sha }}
+          docker push ${{ env.IMAGE }}:latest
