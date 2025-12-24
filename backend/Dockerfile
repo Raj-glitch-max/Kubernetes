@@ -1,19 +1,19 @@
 # =========================
 # STAGE 1 — Dependencies
 # =========================
-FROM node:18-alpine AS dependencies
+FROM node:20-alpine AS dependencies
 WORKDIR /app
 
 # copy only dependency files first (for cache)
 COPY package.json package-lock.json ./
 
 # install production dependencies
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # =========================
 # STAGE 2 — Build
 # =========================
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
 # crete non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup

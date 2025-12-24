@@ -51,7 +51,8 @@ jobs:
           vuln-type: "os,library"
           scanners: "vuln"
           ignore-unfixed: true
-          exit-code: "0"
+          skip-dirs: "/usr/local/lib/node_modules/npm/node_modules"
+          exit-code: "1"
 
       - name: Push image
         run: |
