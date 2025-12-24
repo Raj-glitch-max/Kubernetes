@@ -1,11 +1,14 @@
 name: CI - Build Test Scan
 
 env:
-  IMAGE: rajgltichmax/k8s-project
+  IMAGE: rajglitchmax/k8s-project
 
 on:
   push:
     branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
@@ -25,11 +28,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Validate image name is lowercase
+      - name: Validate Docker image name
         run: |
-          echo "IMAGE=${{ env.IMAGE }}"
+          echo "Using IMAGE=${{ env.IMAGE }}"
           if echo "${{ env.IMAGE }}" | grep -q '[A-Z]'; then
-            echo "Docker image repository must be lowercase. Fix env.IMAGE in this workflow."
+            echo "ERROR: Docker image repository must be lowercase: ${{ env.IMAGE }}"
             exit 1
           fi
 
