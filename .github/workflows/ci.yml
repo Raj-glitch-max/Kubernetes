@@ -3,9 +3,6 @@ name: CI - Build Test Scan
 on:
   push:
     branches: [main]
-    paths:
-      - "backend/**"
-      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
